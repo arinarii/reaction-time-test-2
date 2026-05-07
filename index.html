@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reaction Time Test</title>
+
+<style>
+  body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#f4f4f4;
+    font-family:Arial, sans-serif;
+  }
+
+  .container{
+    text-align:center;
+  }
+
+  h1{
+    margin-bottom:20px;
+  }
+
+  #box{
+    width:350px;
+    height:220px;
+    border-radius:14px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:32px;
+    font-weight:bold;
+    color:white;
+    user-select:none;
+    cursor:pointer;
+    transition:background .15s;
+  }
+
+  .red{
+    background:#8b0000;
+  }
+
+  .green{
+    background:#25a44b;
+  }
+
+  .gray{
+    background:#777;
+  }
+
+  #result{
+    margin-top:20px;
+    font-size:22px;
+    font-weight:bold;
+  }
+
+  button{
+    margin-top:20px;
+    padding:10px 18px;
+    border:none;
+    border-radius:8px;
+    background:#1976d2;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+  }
+
+  button:hover{
+    opacity:.9;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Reaction Time Test</h1>
+
+  <div id="box" class="gray">
+    Click Start
+  </div>
+
+  <button id="startBtn">Start</button>
+
+  <div id="result"></div>
+</div>
+
+<script>
+const box = document.getElementById("box");
+const startBtn = document.getElementById("startBtn");
+const result = document.getElementById("result");
+
+let startTime = 0;
+let waiting = false;
+let canClick = false;
+let timeout;
+
+startBtn.addEventListener("click", startGame);
+
+function startGame(){
+  clearTimeout(timeout);
+
+  waiting = true;
+  canClick = false;
+
+  result.textContent = "";
+
+  box.className = "red";
+  box.textContent = "Wait for Green";
+
+  const delay = Math.random() * 6000 + 1000;
+
+  timeout = setTimeout(() => {
+    waiting = false;
+    canClick = true;
+
+    box.className = "green";
+    box.textContent = "CLICK!";
+
+    startTime = performance.now();
+  }, delay);
+}
+
+box.addEventListener("click", () => {
+
+  // clicked too early
+  if(waiting){
+    clearTimeout(timeout);
+
+    box.className = "gray";
+    box.textContent = "Too Early!";
+    result.textContent = "You clicked before green.";
+
+    waiting = false;
+    return;
+  }
+
+  // valid reaction click
+  if(canClick){
+    const reaction = performance.now() - startTime;
+
+    box.className = "gray";
+    box.textContent = "Done";
+
+    result.textContent = `Reaction Time: ${reaction.toFixed(0)} ms`;
+
+    canClick = false;
+  }
+});
+</script>
+
+</body>
+</html>
